@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,10 +9,22 @@ export const ProfilePage = () => {
     const [isEditing, setEditing] = useState(false);
     const [name, setName] = useState("Ella Raputri");
     const [bio, setBio] = useState("Short description about myself.")
+    const [propic, setPropic] = useState("src/assets/default-avatar.jpg")
+    const fileRef = useRef(null);
 
     const handleSave = () => {
         setEditing(false);
+        console.log(propic);
         toast.success("Profile updated successfully!")
+    }
+
+    const handlePropic = (event) => {
+        const file = event.target.files[0];
+        if(file){
+            const imgUrl = URL.createObjectURL(file);
+            setPropic(imgUrl)
+            toast.success("Profile picture changed!")
+        }
     }
 
     return (
@@ -22,16 +34,21 @@ export const ProfilePage = () => {
             </h2>
             <div className="relative mt-4">
                 <img
-                    src="src/assets/default-avatar.jpg"
+                    src={propic}
                     alt="Profile"
                     className="rounded-full w-42 h-42 border-4 border-gray-700"
                 />
                 {isEditing && (
-                    <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="absolute bottom-0 right-0 text-indigo-400 hover:text-indigo-600"
-                        onClick={() => console.log('edit pict')}
-                    />
+                    <>
+                        <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="absolute bottom-0 right-0 text-indigo-400 hover:text-indigo-600"
+                            onClick={() => fileRef.current.click()}
+                        />
+                        <input type="file" ref={fileRef} accept="image/*"
+                            className='hidden' onChange={handlePropic}
+                        />
+                    </>                    
                 )}
             </div>
 
