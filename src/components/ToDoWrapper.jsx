@@ -72,6 +72,8 @@ export const TodoWrapper = () => {
     }
 
     return (
+        <div>
+        <h1 className="text-2xl font-bold text-center py-4 fixed top-10 left-0 w-full shadow-md">To Do List</h1>
         <div className="TodoWrapper mt-20 fixed top-20 left-0 w-full">
             <button onClick={toggleCompletedFilter}
                 className={`px-4 py-4 rounded border transition-colors duration-300  ${
@@ -99,6 +101,8 @@ export const TodoWrapper = () => {
             </div>
 
             <ToastContainer position='top-right' autoClose={1000} hideProgressBar />
+        </div>
+        
         </div>
     )
 }
