@@ -22,11 +22,13 @@ export const TodoWrapper = () => {
         }]);
 
         console.log(toDos);
+        toast.success("Task added successfully!")
     }
 
     const toggleComplete = id => {
         setToDos(toDos.map(todo => todo.id === id ? {...
         todo, completed: !todo.completed} : todo ))
+        toast.success("Yay! Task completed.")
     }
 
     const deleteToDo = id => {
@@ -67,9 +69,9 @@ export const TodoWrapper = () => {
 
 
     return (
-        <div>
-        <h1 className="text-2xl font-bold text-center py-4 fixed top-20 left-0 w-full shadow-md">To Do List</h1>
-        <div className="TodoWrapper mt-20 fixed top-30 left-0 w-full">
+        <div className="min-h-screen bg-gray-950 ">
+        <h1 className="text-2xl font-bold text-center py-4 fixed top-30 left-0 w-full shadow-md">To Do List</h1>
+        <div className="TodoWrapper mt-20 fixed top-40 left-0 w-full">
             <button onClick={toggleCompletedFilter}
                 className={`px-4 py-4 rounded border transition-colors duration-300  ${
                     showCompleted ? 'bg-neutral-300 text-neutral-900 border-black hover:bg-neutral-400': 
@@ -95,7 +97,7 @@ export const TodoWrapper = () => {
                 ))}
             </div>
 
-            <ToastContainer position='top-right' autoClose={1000} hideProgressBar />
+            <ToastContainer position='bottom-right' autoClose={1000} hideProgressBar />
         </div>
         
         </div>
