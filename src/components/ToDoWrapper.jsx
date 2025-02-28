@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ToDo } from './ToDo.jsx';
 import { ToDoForm } from './ToDoForm.jsx';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,7 +12,6 @@ uuidv4();
 export const TodoWrapper = () => {
     const [toDos, setToDos] = useState([])
     const [showCompleted, setShowCompleted] = useState(false);
-    const navigate = useNavigate();
 
     const addToDo = toDo => {
         setToDos([...toDos, {
@@ -67,14 +65,11 @@ export const TodoWrapper = () => {
         );
     };
 
-    const showProfile = () => {
-        navigate('/profile')
-    }
 
     return (
         <div>
-        <h1 className="text-2xl font-bold text-center py-4 fixed top-10 left-0 w-full shadow-md">To Do List</h1>
-        <div className="TodoWrapper mt-20 fixed top-20 left-0 w-full">
+        <h1 className="text-2xl font-bold text-center py-4 fixed top-20 left-0 w-full shadow-md">To Do List</h1>
+        <div className="TodoWrapper mt-20 fixed top-30 left-0 w-full">
             <button onClick={toggleCompletedFilter}
                 className={`px-4 py-4 rounded border transition-colors duration-300  ${
                     showCompleted ? 'bg-neutral-300 text-neutral-900 border-black hover:bg-neutral-400': 
