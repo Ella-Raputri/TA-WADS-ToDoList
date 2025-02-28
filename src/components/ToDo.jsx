@@ -5,7 +5,7 @@ import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 export const ToDo = ({ task, toggleComplete, deleteToDo, editToDo }) => {
     return (
         <div className="flex mx-auto items-center mb-6 
-            justify-between p-5 rounded-xl shadow-sm bg-neutral-700">
+            justify-between p-5 rounded-xl shadow-sm bg-gray-800">
 
             <div className="flex items-center gap-3">
                 <input

@@ -4,18 +4,17 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react
 import { Bars3Icon, XMarkIcon, BellIcon } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Home', href: '/', current: true },
-  { name: 'To Do', href: '/todo', current: false },
-  { name: 'Profile', href: '/profile', current: false },
+  { name: 'Home', href: '/'},
+  { name: 'To Do', href: '/todo' },
+  { name: 'Profile', href: '/profile'},
 ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar() {
+export default function Navbar({page, setPage}) {
   const navigate = useNavigate();
-  const [page, setPage] = useState("Home");
 
   const handleNavigation = (name, href) => {
     navigate(href);
@@ -35,16 +34,15 @@ export default function Navbar() {
                   alt="Logo"
                 />
                 <div className="hidden sm:ml-6 sm:flex space-x-4">
-                  {navigation.map((item) => (
-                    <button
-                      key={item.name}
-                      onClick={() => handleNavigation(item.name, item.href)}
-                      className={classNames(
-                        item.name === page ? 'bg-gray-950 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'rounded-md px-3 py-2 text-sm font-medium transition duration-200'
-                      )}
-                    >
-                      {item.name}
+                {navigation.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavigation(item.name, item.href)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200
+                    ${item.name === page ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}
+                  `}
+                >
+                  {item.name}
                     </button>
                   ))}
                 </div>

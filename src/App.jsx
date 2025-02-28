@@ -7,13 +7,15 @@ import { ProfilePage } from './components/ProfilePage';
 import Navbar from './components/Navbar';
 
 function App() {
+  const [page, setPage] = useState("Home");
+
   return (
     <div className="App">
         
         <Router>
-            <Navbar/>
+            <Navbar page={page} setPage={setPage}/>
             <Routes>
-                <Route path='/' element={<Homepage />}></Route>
+                <Route path='/' element={<Homepage setPage={setPage} />}></Route>
                 <Route path='/todo' element={<TodoWrapper />}></Route>
                 <Route path='/profile' element={<ProfilePage />}></Route>
             </Routes>

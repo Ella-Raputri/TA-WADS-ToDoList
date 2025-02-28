@@ -9,8 +9,13 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 
-export const Homepage = () => {
+export const Homepage = ({setPage}) => {
     const navigate = useNavigate();
+
+    const goToDo = () => {
+        navigate("/todo");
+        setPage("To Do");
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex flex-col items-center justify-center text-white">
@@ -25,7 +30,7 @@ export const Homepage = () => {
             </div>
 
             <button
-                onClick={() => navigate("/todo")}
+                onClick={goToDo}
                 className="bg-indigo-600 hover:bg-indigo-700 mt-6 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300"
             >
                 Get Started
@@ -51,7 +56,7 @@ export const Homepage = () => {
                     { title: "Sync Across Devices", desc: "Access from anywhere." },
                 ].map((feature, index) => (
                     <SwiperSlide key={index}>
-                    <div className="p-6 bg-white/10 backdrop-blur-md rounded-xl shadow-lg text-center border border-white/20 py-20">
+                    <div className="p-6 bg-white/10 backdrop-blur-md rounded-xl shadow-lg text-center border border-white/20 py-20 min-h-64">
                         <h3 className="text-xl font-semibold">{feature.title}</h3>
                         <p className="text-md text-gray-300 mt-4">{feature.desc}</p>
                     </div>

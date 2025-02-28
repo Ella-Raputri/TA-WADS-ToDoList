@@ -81,7 +81,7 @@ export const TodoWrapper = () => {
             </button>
 
             <ToDoForm addToDo={addToDo}/>
-            <div className="max-h-100 w-4/5 mx-auto p-4 rounded shadow-sm overflow-y-auto">
+            <div className="max-h-100 w-4/5 mx-auto p-4 rounded shadow-sm overflow-y-auto px-15">
                 {filteredTasks.map((todo) => (
                     todo.isEditing ? (
                         <EditTodoForm editToDo={editTask} task={todo} />
