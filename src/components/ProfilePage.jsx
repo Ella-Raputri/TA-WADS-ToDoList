@@ -1,19 +1,52 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import db from '../firebase.js';
+import db, { auth } from '../firebase.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 
 export const ProfilePage = () => {
     const [isEditing, setEditing] = useState(false);
-    const [name, setName] = useState("Ella Raputri");
-    const [bio, setBio] = useState("Short description about myself.")
+    const [name, setName] = useState("");
+    const [bio, setBio] = useState("")
     const [propic, setPropic] = useState("src/assets/default-avatar.jpg")
     const fileRef = useRef(null);
 
-    const handleSave = () => {
+    const fetchUserData = async() => {
+        auth.onAuthStateChanged(async (user) => {
+            console.log(user);
+            const docRef = doc(db, 'users', user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if(docSnap.exists()){
+                const currData = docSnap.data();
+                setName(currData.name);
+                setBio(currData.bio);
+                setPropic(currData.propic || "src/assets/default-avatar.jpg")
+            }
+            else{
+                console.log("User doesn't exist.")
+            }
+        });
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, [])
+
+    const handleSave = async () => {
+        const user = auth.currentUser;
+        if(!user) return;
+
+        const docRef = doc(db, 'users', user.uid);
+        await updateDoc(docRef, {
+            name: name,
+            bio: bio,
+            propic: propic
+        });
+
         setEditing(false);
         console.log(propic);
         toast.success("Profile updated successfully!")
@@ -53,6 +86,7 @@ export const ProfilePage = () => {
                         <FontAwesomeIcon
                             icon={faTrash}
                             className="absolute bottom-0 -right-5 text-indigo-400 hover:text-indigo-600"
+                            onClick={() => setPropic('src/assets/default-avatar.jpg')}
                         />
                     </>                    
                 )}
