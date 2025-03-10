@@ -1,6 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"; // Import icons
+import { useEffect } from "react";
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -14,6 +15,14 @@ function classNames(...classes) {
 
 export default function Navbar({ page, setPage, loggedIn, setLoggedIn }) {
   const navigate = useNavigate();
+  const location = useLocation(); 
+
+  useEffect(() => {
+    const currentPage = navigation.find((item) => item.href === location.pathname);
+    if (currentPage) {
+      setPage(currentPage.name);
+    }
+  }, [location.pathname, setPage]);
 
   const handleNavigation = (name, href) => {
     navigate(href);
