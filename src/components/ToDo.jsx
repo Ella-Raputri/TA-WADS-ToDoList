@@ -16,7 +16,7 @@ export const ToDo = ({ task, toggleComplete, deleteToDo, editToDo }) => {
                     id={`todo-${task.id}`}
                 />
                 <label htmlFor={`todo-${task.id}`} className="cursor-pointer peer-checked:line-through peer-checked:text-gray-500">
-                    {task.task}
+                    {task.todo}
                 </label>
             </div>
 

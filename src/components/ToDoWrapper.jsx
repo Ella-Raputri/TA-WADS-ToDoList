@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToDo } from './ToDo.jsx';
 import { ToDoForm } from './ToDoForm.jsx';
 import { v4 as uuidv4 } from 'uuid';
 import { EditTodoForm } from './EditToDoForm.jsx';
 import { toast, ToastContainer } from 'react-toastify';
+import db from '../firebase.js';
 import 'react-toastify/dist/ReactToastify.css';
+import { collection, getDocs } from 'firebase/firestore';
 
 uuidv4();
 
 export const TodoWrapper = () => {
     const [toDos, setToDos] = useState([]);
     const [showCompleted, setShowCompleted] = useState(false);
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            const querySnaps = await getDocs(collection(db, 'tasks'));
+            const tasks = [];
+            querySnaps.forEach((doc) => {
+                tasks.push({id: doc.id, ...doc.data()});
+            });
+            setToDos(tasks);
+            console.log(tasks);
+        };
+        fetchTasks();
+    }, []);
 
     const addToDo = toDo => {
         setToDos([...toDos, {
@@ -73,7 +88,7 @@ export const TodoWrapper = () => {
                 </button>
 
                 <ToDoForm addToDo={addToDo} />
-                <div className="mt-4 h-96 overflow-y-auto">
+                <div className="mt-4 h-96 overflow-y-auto px-6 md:px-12">
                     {filteredTasks.map((todo) => (
                         todo.isEditing ? (
                             <EditTodoForm editToDo={editTask} task={todo} key={todo.id} />
