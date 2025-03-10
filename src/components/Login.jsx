@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import db, { auth } from '../firebase';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export const Login = ({ setLoggedIn }) => {
     const [email, setEmail] = useState('');
@@ -7,14 +11,18 @@ export const Login = ({ setLoggedIn }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Simulate login (replace with actual authentication logic)
-        if (email === 'user@example.com' && password === 'password') {
+        try{
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log('User logged in successfully.');
+            toast.success('Login successful.');
             setLoggedIn(true);
-            navigate('/todo'); // Redirect to ToDo page after login
-        } else {
-            setError('Invalid email or password');
+            navigate('/profile');
+        }
+        catch(err){
+            console.error('Error login ', err);
+            toast.error("Failed to login. Please try again.")
         }
     };
 
@@ -51,13 +59,16 @@ export const Login = ({ setLoggedIn }) => {
                         Login
                     </button>
                 </form>
-                <p className="mt-6 text-gray-400">
+                <p className="mt-4 text-gray-400">
                     Don't have an account?{' '}
                     <a href="/register">
                         Register
                     </a>
                 </p>
             </div>
+
+            <ToastContainer position='bottom-right' autoClose={1000} hideProgressBar />
+            
         </div>
     );
 };

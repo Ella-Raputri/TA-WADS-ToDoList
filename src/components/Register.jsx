@@ -1,29 +1,63 @@
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import db, { auth } from '../firebase';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { doc, setDoc } from 'firebase/firestore';
 
 export const Register = ({ setLoggedIn }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState("");
+    const [bio, setBio] = useState("");
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        // Simulate registration (replace with actual registration logic)
         if (email && password) {
-            setLoggedIn(true);
-            navigate('/todo'); // Redirect to ToDo page after registration
-        } else {
+            try{
+                await createUserWithEmailAndPassword(auth, email, password);
+                const user = auth.currentUser;
+
+                if(user){
+                    await setDoc(doc(db, "users", user.uid), {
+                        email: user.email,
+                        name: name,
+                        bio: bio,
+                    });
+                }
+                toast.success("User registered successfully!");
+                setLoggedIn(true);
+                navigate('/profile');
+            }
+            catch(err){
+                toast.error("Failed to register user");
+                console.error('Error register ', err);
+            }             
+        } 
+        else {
             setError('Please fill in all fields');
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-950">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
+        <div className="min-h-screen flex items-center justify-center bg-gray-950 mt-10">
+            <div className="bg-gray-800 p-8 rounded-lg shadow-md w-96 mt-20 mb-20">
                 <h2 className="text-2xl font-bold mb-6 text-white">Register</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleRegister}>
+                    <div className="mb-10">
+                        <label className="block text-left ml-1 text-gray-300 mb-1">Name</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                            required
+                        />
+                    </div>
                     <div className="mb-10">
                         <label className="block text-left ml-1 text-gray-300 mb-1">Email</label>
                         <input
@@ -34,12 +68,21 @@ export const Register = ({ setLoggedIn }) => {
                             required
                         />
                     </div>
-                    <div className="mb-12">
+                    <div className="mb-10">
                         <label className="block text-left ml-1 text-gray-300 mb-1">Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                            required
+                        />
+                    </div>
+                    <div className="mb-12">
+                        <label className="block text-left ml-1 text-gray-300 mb-1">Description</label>
+                        <textarea
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
                             className="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                             required
                         />
@@ -58,6 +101,9 @@ export const Register = ({ setLoggedIn }) => {
                     </a>
                 </p>
             </div>
+
+            <ToastContainer position='bottom-right' autoClose={1000} hideProgressBar />
+            
         </div>
     );
 };
