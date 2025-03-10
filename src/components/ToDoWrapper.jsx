@@ -6,7 +6,7 @@ import { EditTodoForm } from './EditToDoForm.jsx';
 import { toast, ToastContainer } from 'react-toastify';
 import db from '../firebase.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 uuidv4();
 
@@ -27,26 +27,49 @@ export const TodoWrapper = () => {
         fetchTasks();
     }, []);
 
-    const addToDo = toDo => {
-        setToDos([...toDos, {
-            id: uuidv4(),
-            task: toDo,
-            completed: false,
-            isEditing: false
-        }]);
-        toast.success("Task added successfully!");
+    const addToDo = async (toDo) => {
+        try{
+            const docRef = await addDoc(collection(db, 'tasks'), {
+                todo: toDo,
+                completed: false,
+                isEditing: false, 
+            });
+            setToDos([...toDos, {id: docRef.id, todo: toDo, completed:false, isEditing:false}])
+            toast.success("Task added successfully!");
+        }
+        catch(err){
+            console.error("Error add task: ", err);
+            toast.error("Failed adding task.")
+        }
     }
 
-    const toggleComplete = id => {
-        setToDos(toDos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
-        toast.success("Yay! Task completed.");
+    const toggleComplete = async (id) => {
+        try{
+            const todo = toDos.find(todo => todo.id === id);
+            await updateDoc(doc(db, 'tasks', id), {
+                completed : !todo.completed,
+            })
+            setToDos(toDos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+            toast.success("Task status updated.");
+        }
+        catch(err){
+            console.error('Error update: ', err);
+            toast.error("Failed to update task.")
+        }
     }
 
-    const deleteToDo = id => {
+    const deleteToDo = async (id) => {
         const confirm = window.confirm("Are you sure you want to delete this task?");
         if (confirm) {
-            setToDos(toDos.filter(todo => todo.id !== id));
-            toast.success("Task deleted successfully!");
+            try{
+                await deleteDoc(doc(db, 'tasks', id));
+                setToDos(toDos.filter(todo => todo.id !== id));
+                toast.success("Task deleted successfully!");
+            }
+            catch(err){
+                console.error('Error deleting: ', err);
+                toast.error("Failed to delete task.")
+            }
         }
     }
 
@@ -54,9 +77,19 @@ export const TodoWrapper = () => {
         setToDos(toDos.map(todo => todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo));
     }
 
-    const editTask = (id, updatedValue) => {
-        setToDos(toDos.map(todo => todo.id === id ? { ...todo, task: updatedValue, isEditing: !todo.isEditing } : todo));
-        toast.success("Task edited successfully!");
+    const editTask = async (id, updatedValue) => {
+        try{
+            await updateDoc(doc(db, 'tasks', id), {
+                todo: updatedValue,
+                isEditing: false,
+            })
+            setToDos(toDos.map(todo1 => todo1.id === id ? { ...todo1, todo: updatedValue, isEditing: !todo1.isEditing } : todo1));
+            toast.success("Task edited successfully!");
+        }
+        catch(err){
+            console.error('Error editing: ', err);
+            toast.error("Failed to edit task.")
+        }
     }
 
     const toggleCompletedFilter = () => {
