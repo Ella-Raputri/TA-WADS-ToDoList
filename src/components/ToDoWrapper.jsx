@@ -4,37 +4,57 @@ import { ToDoForm } from './ToDoForm.jsx';
 import { v4 as uuidv4 } from 'uuid';
 import { EditTodoForm } from './EditToDoForm.jsx';
 import { toast, ToastContainer } from 'react-toastify';
-import db from '../firebase.js';
+import db, { auth } from '../firebase.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 
 uuidv4();
 
 export const TodoWrapper = () => {
     const [toDos, setToDos] = useState([]);
     const [showCompleted, setShowCompleted] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            const querySnaps = await getDocs(collection(db, 'tasks'));
-            const tasks = [];
-            querySnaps.forEach((doc) => {
-                tasks.push({id: doc.id, ...doc.data()});
-            });
-            setToDos(tasks);
-            console.log(tasks);
-        };
-        fetchTasks();
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if(user){
+                setUser(user);
+                fetchTasks(user.uid);
+            }
+            else{
+                setUser(null);
+                setToDos([]);
+            }
+        });
+        return () => unsubscribe();
     }, []);
 
+    const fetchTasks = async (userId) => {
+        try {
+            const q = query(collection(db, 'tasks'), where('userId', '==', userId));
+            const querySnaps = await getDocs(q);
+            const tasks = querySnaps.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setToDos(tasks);
+        } catch (err) {
+            console.error('Error fetching tasks:', err);
+            toast.error('Failed to load tasks.');
+        }
+    };
+
     const addToDo = async (toDo) => {
+        if(!user) return;
+
         try{
             const docRef = await addDoc(collection(db, 'tasks'), {
                 todo: toDo,
                 completed: false,
                 isEditing: false, 
+                userId: user.uid,
             });
-            setToDos([...toDos, {id: docRef.id, todo: toDo, completed:false, isEditing:false}])
+            setToDos([...toDos, {id: docRef.id, todo: toDo, completed:false, isEditing:false, userId: user.uid}])
             toast.success("Task added successfully!");
         }
         catch(err){

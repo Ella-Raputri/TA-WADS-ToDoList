@@ -26,11 +26,12 @@ export const Register = ({ setLoggedIn }) => {
                         email: user.email,
                         name: name,
                         bio: bio,
+                        propic: "src/assets/default-avatar.jpg"
                     });
                 }
                 toast.success("User registered successfully!");
                 setLoggedIn(true);
-                navigate('/profile');
+                navigate('/');
             }
             catch(err){
                 toast.error("Failed to register user");

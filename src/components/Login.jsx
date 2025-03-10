@@ -18,7 +18,7 @@ export const Login = ({ setLoggedIn }) => {
             console.log('User logged in successfully.');
             toast.success('Login successful.');
             setLoggedIn(true);
-            navigate('/profile');
+            navigate('/');
         }
         catch(err){
             console.error('Error login ', err);
