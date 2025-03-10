@@ -6,11 +6,10 @@ import { EditTodoForm } from './EditToDoForm.jsx';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 uuidv4();
 
 export const TodoWrapper = () => {
-    const [toDos, setToDos] = useState([])
+    const [toDos, setToDos] = useState([]);
     const [showCompleted, setShowCompleted] = useState(false);
 
     const addToDo = toDo => {
@@ -20,35 +19,29 @@ export const TodoWrapper = () => {
             completed: false,
             isEditing: false
         }]);
-
-        console.log(toDos);
-        toast.success("Task added successfully!")
+        toast.success("Task added successfully!");
     }
 
     const toggleComplete = id => {
-        setToDos(toDos.map(todo => todo.id === id ? {...
-        todo, completed: !todo.completed} : todo ))
-        toast.success("Yay! Task completed.")
+        setToDos(toDos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+        toast.success("Yay! Task completed.");
     }
 
     const deleteToDo = id => {
-        const confirm = window.confirm("Are you sure you want to delete this task?")
-        if(confirm) {
-           setToDos(toDos.filter(todo => todo.id !== id));
-           toast.success("Task deleted successfully!") 
+        const confirm = window.confirm("Are you sure you want to delete this task?");
+        if (confirm) {
+            setToDos(toDos.filter(todo => todo.id !== id));
+            toast.success("Task deleted successfully!");
         }
-        
     }
 
     const editToDo = id => {
-        setToDos(toDos.map((todo) => todo.id === id ? {...
-            todo, isEditing: !todo.isEditing} : todo));
+        setToDos(toDos.map(todo => todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo));
     }
 
     const editTask = (id, updatedValue) => {
-        setToDos(toDos.map(todo => todo.id === id ? {...
-            todo, task: updatedValue, isEditing: !todo.isEditing} : todo));
-        toast.success("Task edited successfully!") 
+        setToDos(toDos.map(todo => todo.id === id ? { ...todo, task: updatedValue, isEditing: !todo.isEditing } : todo));
+        toast.success("Task edited successfully!");
     }
 
     const toggleCompletedFilter = () => {
@@ -56,50 +49,48 @@ export const TodoWrapper = () => {
     };
 
     const filteredTasks = showCompleted
-        ? toDos.filter((todo) => todo.completed)
+        ? toDos.filter(todo => todo.completed)
         : toDos;
 
     const handleToggle = (todoId) => {
-        setToDos((prevToDos) =>
-            prevToDos.map((todo) =>
+        setToDos(prevToDos =>
+            prevToDos.map(todo =>
                 todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
             )
         );
     };
 
-
     return (
-        <div className="min-h-screen bg-gray-950 ">
-        <h1 className="text-2xl font-bold text-center py-4 fixed top-30 left-0 w-full shadow-md">To Do List</h1>
-        <div className="TodoWrapper mt-20 fixed top-40 left-0 w-full">
-            <button onClick={toggleCompletedFilter}
-                className={`px-4 py-4 rounded border transition-colors duration-300  ${
-                    showCompleted ? 'bg-neutral-300 text-neutral-900 border-black hover:bg-neutral-400': 
-                    'bg-neutral-900 text-white border-white hover:bg-neutral-700'                     
-                }`}>
-                {showCompleted ? 'Show All' : 'Show Completed'}
-            </button>
+        <div className="min-h-screen bg-gray-950 py-10">
+            <h1 className="text-2xl mt-10 font-bold text-center py-4 bg-gray-950 shadow-md">To Do List</h1>
+            <div className="TodoWrapper p-4">
+                <button onClick={toggleCompletedFilter}
+                    className={`px-4 py-2 rounded border transition-colors duration-300 ${
+                        showCompleted ? 'bg-neutral-300 text-neutral-900 border-black hover:bg-neutral-400' : 
+                        'bg-neutral-900 text-white border-white hover:bg-neutral-700'
+                    }`}>
+                    {showCompleted ? 'Show All' : 'Show Completed'}
+                </button>
 
-            <ToDoForm addToDo={addToDo}/>
-            <div className="max-h-100 w-4/5 mx-auto p-4 rounded shadow-sm overflow-y-auto px-15">
-                {filteredTasks.map((todo) => (
-                    todo.isEditing ? (
-                        <EditTodoForm editToDo={editTask} task={todo} />
-                    ) : (
-                        <ToDo
-                            task={todo}
-                            toggleComplete={toggleComplete}
-                            deleteToDo={deleteToDo}
-                            editToDo={editToDo}
-                            onToggle={handleToggle}
-                        />
-                    )
-                ))}
+                <ToDoForm addToDo={addToDo} />
+                <div className="mt-4 h-96 overflow-y-auto">
+                    {filteredTasks.map((todo) => (
+                        todo.isEditing ? (
+                            <EditTodoForm editToDo={editTask} task={todo} key={todo.id} />
+                        ) : (
+                            <ToDo
+                                task={todo}
+                                toggleComplete={toggleComplete}
+                                deleteToDo={deleteToDo}
+                                editToDo={editToDo}
+                                onToggle={handleToggle}
+                                key={todo.id}
+                            />
+                        )
+                    ))}
+                </div>
             </div>
-
             <ToastContainer position='bottom-right' autoClose={1000} hideProgressBar />
         </div>
-        
-        </div>
-    )
+    );
 }

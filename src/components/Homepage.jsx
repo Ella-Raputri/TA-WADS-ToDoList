@@ -20,7 +20,7 @@ export const Homepage = ({setPage}) => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex flex-col items-center justify-center text-white">
 
-            <div className="text-center mb-8">
+            <div className="text-center mb-8 mt-25 md:mt-15">
                 <h2 className="text-lg sm:text-2xl font-light text-gray-300">
                 Boost Your Efficiency with
                 </h2>
