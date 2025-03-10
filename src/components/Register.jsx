@@ -24,8 +24,8 @@ export const Register = ({ setLoggedIn }) => {
                 <h2 className="text-2xl font-bold mb-6 text-white">Register</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleRegister}>
-                    <div className="mb-4">
-                        <label className="block text-gray-300 mb-2">Email</label>
+                    <div className="mb-10">
+                        <label className="block text-left ml-1 text-gray-300 mb-1">Email</label>
                         <input
                             type="email"
                             value={email}
@@ -34,8 +34,8 @@ export const Register = ({ setLoggedIn }) => {
                             required
                         />
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-300 mb-2">Password</label>
+                    <div className="mb-12">
+                        <label className="block text-left ml-1 text-gray-300 mb-1">Password</label>
                         <input
                             type="password"
                             value={password}
@@ -46,14 +46,14 @@ export const Register = ({ setLoggedIn }) => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
+                        className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-200"
                     >
                         Register
                     </button>
                 </form>
                 <p className="mt-4 text-gray-400">
                     Already have an account?{' '}
-                    <a href="/login" className="text-blue-500 hover:underline">
+                    <a href="/login">
                         Login
                     </a>
                 </p>
