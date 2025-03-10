@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import db from '../firebase.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -47,6 +48,11 @@ export const ProfilePage = () => {
                         />
                         <input type="file" ref={fileRef} accept="image/*"
                             className='hidden' onChange={handlePropic}
+                        />
+
+                        <FontAwesomeIcon
+                            icon={faTrash}
+                            className="absolute bottom-0 -right-5 text-indigo-400 hover:text-indigo-600"
                         />
                     </>                    
                 )}
