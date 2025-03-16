@@ -40,6 +40,7 @@ Now, you can preview this simple to do list app. If you want to pull the images 
 <br>
 
 ## Docker Setup
+You can view the Docker image in the Docker Hub: [ellaraputri/todo-app:v1.0](https://hub.docker.com/r/ellaraputri/todo-app/tags). 
 ### 1. Pull the Docker Image
 ```sh
 docker pull ellaraputri/todo-app:v1.0
