@@ -16,6 +16,7 @@ Before you begin, ensure you have the following installed:
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/) (if using Docker setup)
 
+<br>
 
 ## Setup Instructions
 ### 1. Clone the Repository
