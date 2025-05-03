@@ -1,60 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { ToDo } from './ToDo.jsx';
 import { ToDoForm } from './ToDoForm.jsx';
-import { v4 as uuidv4 } from 'uuid';
 import { EditTodoForm } from './EditToDoForm.jsx';
 import { toast, ToastContainer } from 'react-toastify';
-import db, { auth } from '../firebase.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import axios from 'axios';
 
-uuidv4();
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export const TodoWrapper = () => {
     const [toDos, setToDos] = useState([]);
     const [showCompleted, setShowCompleted] = useState(false);
-    const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-            if(user){
-                setUser(user);
-                fetchTasks(user.uid);
-            }
-            else{
-                setUser(null);
-                setToDos([]);
-            }
-        });
-        return () => unsubscribe();
-    }, []);
-
-    const fetchTasks = async (userId) => {
+    const fetchTasks = async () => {
         try {
-            const q = query(collection(db, 'tasks'), where('userId', '==', userId));
-            const querySnaps = await getDocs(q);
-            const tasks = querySnaps.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setToDos(tasks);
-        } catch (err) {
+            const res = await axios.get(
+                `${API_BASE_URL}/api/task/getTasks`, 
+                { withCredentials: true }
+            )
+            setToDos(res.data.tasks);
+        } 
+        catch (err) {
             console.error('Error fetching tasks:', err);
             toast.error('Failed to load tasks.');
         }
     };
 
-    const addToDo = async (toDo) => {
-        if(!user) return;
+    useEffect(() => {
+        fetchTasks();
+    }, []);
 
+    const addToDo = async (toDo) => {
         try{
-            const docRef = await addDoc(collection(db, 'tasks'), {
-                todo: toDo,
-                completed: false,
-                isEditing: false, 
-                userId: user.uid,
-            });
-            setToDos([...toDos, {id: docRef.id, todo: toDo, completed:false, isEditing:false, userId: user.uid}])
+            const res = await axios.post(`${API_BASE_URL}/api/task/createTask`, { todo: toDo }, { withCredentials: true });
+            setToDos([...toDos, res.data.task]);
             toast.success("Task added successfully!");
         }
         catch(err){
@@ -66,10 +46,9 @@ export const TodoWrapper = () => {
     const toggleComplete = async (id) => {
         try{
             const todo = toDos.find(todo => todo.id === id);
-            await updateDoc(doc(db, 'tasks', id), {
-                completed : !todo.completed,
-            })
-            setToDos(toDos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+            const updated = { completed: !todo.completed };
+            const res = await axios.put(`${API_BASE_URL}/api/task/updateTask/${id}`, updated, { withCredentials: true });
+            setToDos(toDos.map(t => t.id === id ? res.data.task : t));
             toast.success("Task status updated.");
         }
         catch(err){
@@ -82,7 +61,7 @@ export const TodoWrapper = () => {
         const confirm = window.confirm("Are you sure you want to delete this task?");
         if (confirm) {
             try{
-                await deleteDoc(doc(db, 'tasks', id));
+                await axios.delete(`${API_BASE_URL}/api/task/deleteTask/${id}`, { withCredentials: true });
                 setToDos(toDos.filter(todo => todo.id !== id));
                 toast.success("Task deleted successfully!");
             }
@@ -99,11 +78,11 @@ export const TodoWrapper = () => {
 
     const editTask = async (id, updatedValue) => {
         try{
-            await updateDoc(doc(db, 'tasks', id), {
+            const res = await axios.put(`${API_BASE_URL}/api/task/updateTask/${id}`, {
                 todo: updatedValue,
-                isEditing: false,
-            })
-            setToDos(toDos.map(todo1 => todo1.id === id ? { ...todo1, todo: updatedValue, isEditing: !todo1.isEditing } : todo1));
+                isEditing: false
+            }, { withCredentials: true });
+            setToDos(toDos.map(todo => todo.id === id ? res.data.task : todo));
             toast.success("Task edited successfully!");
         }
         catch(err){

@@ -41,7 +41,7 @@ export const ProfilePage = () => {
                 {
                     name: name,
                     bio: bio,
-                    propic: propic
+                    propic: propic === "src/assets/default-avatar.jpg" ? null : propic
                 },
                 {withCredentials: true}
             );
@@ -88,7 +88,7 @@ export const ProfilePage = () => {
                         <FontAwesomeIcon
                             icon={faTrash}
                             className="absolute bottom-0 -right-5 text-indigo-400 hover:text-indigo-600"
-                            onClick={() => setPropic('src/assets/default-avatar.jpg')}
+                            onClick={() => setPropic("src/assets/default-avatar.jpg")}
                         />
                     </>                    
                 )}
