@@ -2,6 +2,9 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react
 import { useLocation, useNavigate } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"; // Import icons
 import { useEffect } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -16,6 +19,7 @@ function classNames(...classes) {
 export default function Navbar({ page, setPage, loggedIn, setLoggedIn }) {
   const navigate = useNavigate();
   const location = useLocation(); 
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const currentPage = navigation.find((item) => item.href === location.pathname);
@@ -29,9 +33,21 @@ export default function Navbar({ page, setPage, loggedIn, setLoggedIn }) {
     setPage(name);
   };
 
-  const handleLogout = () => {
-    setLoggedIn(false);
-    navigate('/');
+  const handleLogout = async () => {
+    try{
+        const response = await axios.post(
+            `${API_BASE_URL}/api/user/logout`,
+            {},
+            {withCredentials: true}
+        );
+        toast.success('Logout successful!');
+        setLoggedIn(false);
+        navigate('/');
+    }
+    catch(err){
+        console.error('Error logout ', err);
+        toast.error("Failed to logout. Please try again.")
+    }
   };
 
   return (
@@ -122,6 +138,9 @@ export default function Navbar({ page, setPage, loggedIn, setLoggedIn }) {
               })}
             </div>
           </DisclosurePanel>
+          
+          <ToastContainer position='bottom-right' autoClose={1000} hideProgressBar />
+          
         </>
       )}
     </Disclosure>

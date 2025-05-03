@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import db, { auth } from '../firebase.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import axios from 'axios';
 
 
 export const ProfilePage = () => {
@@ -13,23 +12,22 @@ export const ProfilePage = () => {
     const [bio, setBio] = useState("")
     const [propic, setPropic] = useState("src/assets/default-avatar.jpg")
     const fileRef = useRef(null);
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const fetchUserData = async() => {
-        auth.onAuthStateChanged(async (user) => {
-            console.log(user);
-            const docRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if(docSnap.exists()){
-                const currData = docSnap.data();
-                setName(currData.name);
-                setBio(currData.bio);
-                setPropic(currData.propic || "src/assets/default-avatar.jpg")
-            }
-            else{
-                console.log("User doesn't exist.")
-            }
-        });
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/user/userData`, {
+                withCredentials: true
+            });
+            const user = response.data.user;
+            setName(user.name);
+            setBio(user.bio);
+            setPropic(user.propic || "src/assets/default-avatar.jpg");
+        } 
+        catch (err) {
+            console.error("Error fetching user data:", err);
+            toast.error("Failed to load user data.");
+        }
     };
 
     useEffect(() => {
@@ -37,19 +35,23 @@ export const ProfilePage = () => {
     }, [])
 
     const handleSave = async () => {
-        const user = auth.currentUser;
-        if(!user) return;
-
-        const docRef = doc(db, 'users', user.uid);
-        await updateDoc(docRef, {
-            name: name,
-            bio: bio,
-            propic: propic
-        });
-
-        setEditing(false);
-        console.log(propic);
-        toast.success("Profile updated successfully!")
+        try {
+            const response = await axios.put(
+                `${API_BASE_URL}/api/user/updateUser`,
+                {
+                    name: name,
+                    bio: bio,
+                    propic: propic
+                },
+                {withCredentials: true}
+            );
+    
+            setEditing(false);
+            toast.success("Profile updated successfully!");
+        } catch (err) {
+            console.error("Error updating user:", err);
+            toast.error("Failed to update profile.");
+        }
     }
 
     const handlePropic = (event) => {

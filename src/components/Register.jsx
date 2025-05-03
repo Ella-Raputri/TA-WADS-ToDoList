@@ -1,10 +1,9 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import db, { auth } from '../firebase';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { doc, setDoc } from 'firebase/firestore';
+import axios from 'axios';
 
 export const Register = ({ setLoggedIn }) => {
     const [email, setEmail] = useState('');
@@ -13,28 +12,29 @@ export const Register = ({ setLoggedIn }) => {
     const [bio, setBio] = useState("");
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (email && password) {
+        if (email && password && name) {
             try{
-                await createUserWithEmailAndPassword(auth, email, password);
-                const user = auth.currentUser;
+                const response = await axios.post(
+                    `${API_BASE_URL}/api/user/register`,
+                    {email, password, name, bio},
+                    {withCredentials: true}
+                );
 
-                if(user){
-                    await setDoc(doc(db, "users", user.uid), {
-                        email: user.email,
-                        name: name,
-                        bio: bio,
-                        propic: "src/assets/default-avatar.jpg"
-                    });
+                if(response.data.success){
+                    toast.success("User registered successfully!");
+                    setLoggedIn(true);
+                    navigate('/');
                 }
-                toast.success("User registered successfully!");
-                setLoggedIn(true);
-                navigate('/');
+                else{
+                    toast.error("Failed to register user!");
+                }
             }
             catch(err){
-                toast.error("Failed to register user");
+                toast.error("Failed to register user!");
                 console.error('Error register ', err);
             }             
         } 

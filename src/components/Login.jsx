@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import db, { auth } from '../firebase';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import axios from 'axios';
 
 export const Login = ({ setLoggedIn }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try{
-            await signInWithEmailAndPassword(auth, email, password);
-            console.log('User logged in successfully.');
-            toast.success('Login successful.');
+            const response = await axios.post(
+                `${API_BASE_URL}/api/user/login`,
+                {email, password},
+                {withCredentials: true}
+            );
+            toast.success('Login successful!');
             setLoggedIn(true);
             navigate('/');
         }
