@@ -21,7 +21,7 @@ Before you begin, ensure you have the following installed:
 ## Setup Instructions
 ### 1. Clone the Repository
 ```sh
-git clone https://github.com/Ella-Raputri/TA-WADS-ToDoList
+git clone https://github.com/Ella-Raputri/TA-WADS-ToDoList.git
 cd TA-WADS-ToDoList
 ```
 
