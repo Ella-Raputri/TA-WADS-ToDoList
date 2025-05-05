@@ -6,7 +6,7 @@
 <br>
 
 ## Project Description
-This is a simple to do list app used for my practice in using React, Vite, and Firebase.
+This is a simple to do list app used for my practice in using React, Vite, and Axios to connect with the backend.
 
 <br>
 
